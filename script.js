@@ -20,11 +20,24 @@ let recipes = [
 ];
 
 // DOM Elements
-const recipeList = document.getElementById('recipes');
-const recipeFormSection = document.getElementById('recipe-form');
-const newRecipeForm = document.getElementById('new-recipe-form');
-const addRecipeButton = document.getElementById('add-recipe');
-const cancelFormButton = document.getElementById('cancel-form');
+let recipeList, recipeFormSection, newRecipeForm, addRecipeButton, cancelFormButton;
+
+// Initialize DOM elements when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    recipeList = document.getElementById('recipes');
+    recipeFormSection = document.getElementById('recipe-form');
+    newRecipeForm = document.getElementById('new-recipe-form');
+    addRecipeButton = document.getElementById('add-recipe');
+    cancelFormButton = document.getElementById('cancel-form');
+
+    // Event Listeners
+    addRecipeButton.addEventListener('click', showRecipeForm);
+    cancelFormButton.addEventListener('click', hideRecipeForm);
+    newRecipeForm.addEventListener('submit', addRecipe);
+
+    // Initialize
+    loadRecipes();
+});
 
 // Load recipes from localStorage or use sample data
 function loadRecipes() {
@@ -42,6 +55,8 @@ function saveRecipes() {
 
 // Display all recipes
 function displayRecipes() {
+    if (!recipeList) return; // Guard clause if element not found
+
     recipeList.innerHTML = '';
     recipes.forEach(recipe => {
         const recipeCard = document.createElement('div');
@@ -64,6 +79,8 @@ function displayRecipes() {
 
 // Show the recipe form
 function showRecipeForm() {
+    if (!recipeFormSection || !newRecipeForm) return; // Guard clause if elements not found
+
     recipeFormSection.classList.remove('hidden');
     newRecipeForm.reset();
     document.getElementById('name').focus();
@@ -71,19 +88,21 @@ function showRecipeForm() {
 
 // Hide the recipe form
 function hideRecipeForm() {
+    if (!recipeFormSection) return; // Guard clause if element not found
+
     recipeFormSection.classList.add('hidden');
 }
 
 // Add a new recipe
 function addRecipe(event) {
     event.preventDefault();
-    
+
     const name = document.getElementById('name').value;
     const ingredients = document.getElementById('ingredients').value;
     const instructions = document.getElementById('instructions').value;
     const notes = document.getElementById('notes').value;
     const rating = parseInt(document.getElementById('rating').value) || 0;
-    
+
     const newRecipe = {
         id: Date.now(), // Unique ID based on timestamp
         name,
@@ -92,7 +111,7 @@ function addRecipe(event) {
         notes,
         rating
     };
-    
+
     recipes.push(newRecipe);
     saveRecipes();
     displayRecipes();
@@ -103,16 +122,16 @@ function addRecipe(event) {
 function editRecipe(id) {
     const recipe = recipes.find(r => r.id === id);
     if (!recipe) return;
-    
+
     document.getElementById('name').value = recipe.name;
     document.getElementById('ingredients').value = recipe.ingredients;
     document.getElementById('instructions').value = recipe.instructions;
     document.getElementById('notes').value = recipe.notes;
     document.getElementById('rating').value = recipe.rating;
-    
+
     // Remove the existing recipe
     recipes = recipes.filter(r => r.id !== id);
-    
+
     showRecipeForm();
 }
 
@@ -124,11 +143,3 @@ function deleteRecipe(id) {
         displayRecipes();
     }
 }
-
-// Event Listeners
-addRecipeButton.addEventListener('click', showRecipeForm);
-cancelFormButton.addEventListener('click', hideRecipeForm);
-newRecipeForm.addEventListener('submit', addRecipe);
-
-// Initialize
-loadRecipes();
