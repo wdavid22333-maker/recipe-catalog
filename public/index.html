@@ -1,396 +1,445 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recipe Catalog</title>
-    <style>
-        :root {
-            --bg-dark: #0f172a;
-            --bg-card: #1e293b;
-            --text-primary: #f1f5f9;
-            --text-secondary: #94a3b8;
-            --accent: #3b82f6;
-            --accent-hover: #2563eb;
-            --border: #334155;
-            --danger: #ef4444;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recipe Catalog</title>
+<style>
+  :root {
+    --bg: #09090b;
+    --surface: #111113;
+    --surface-2: #17171a;
+    --border: #26262b;
+    --text: #fafafa;
+    --muted: #a1a1aa;
+    --accent: #6366f1;
+    --accent-hover: #818cf8;
+    --danger: #ef4444;
+    --radius: 0.625rem;
+  }
 
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-primary);
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-        }
+  * { box-sizing: border-box; }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 1rem;
-        }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
 
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 0;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 2rem;
-        }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { color: var(--accent-hover); }
 
-        h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--accent);
-            margin: 0;
-        }
+  .shell { max-width: 760px; margin: 0 auto; padding: 1.5rem 1.25rem 4rem; }
 
-        .btn {
-            padding: 0.5rem 1rem;
-            border-radius: 0.375rem;
-            font-weight: 500;
-            cursor: pointer;
-            border: none;
-            transition: all 0.2s ease;
-            font-size: 0.875rem;
-        }
+  /* ---- top bar ---- */
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 2rem;
+  }
+  .topbar h1 { font-size: 1.1rem; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
+  .topbar h1 .dot { color: var(--accent); }
+  .brand { display: flex; align-items: center; gap: 0.5rem; }
+  .brand .mark {
+    width: 20px; height: 20px; border-radius: 5px;
+    background: linear-gradient(135deg, #6366f1, #a855f7);
+    display: inline-block;
+  }
 
-        .btn-primary {
-            background-color: var(--accent);
-            color: white;
-        }
-        .btn-primary:hover { background-color: var(--accent-hover); }
+  .btn {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.45rem 0.9rem; border-radius: var(--radius);
+    font-size: 0.875rem; font-weight: 500; cursor: pointer;
+    border: 1px solid transparent; transition: background .15s, border-color .15s;
+    font-family: inherit; line-height: 1.4;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: var(--accent-hover); }
+  .btn-ghost { background: transparent; color: var(--text); border-color: var(--border); }
+  .btn-ghost:hover { background: var(--surface-2); }
+  .btn-danger { background: transparent; color: var(--danger); border-color: rgba(239,68,68,.35); }
+  .btn-danger:hover { background: rgba(239,68,68,.12); }
+  .btn-sm { padding: 0.3rem 0.65rem; font-size: 0.8rem; }
 
-        .btn-secondary {
-            background-color: var(--bg-card);
-            color: var(--text-primary);
-            border: 1px solid var(--border);
-        }
-        .btn-secondary:hover { background-color: #334155; }
+  input[type=text], textarea, select {
+    width: 100%; padding: 0.6rem 0.75rem;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); color: var(--text);
+    font-family: inherit; font-size: 0.95rem;
+  }
+  input:focus, textarea:focus, select:focus {
+    outline: none; border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(99,102,241,.15);
+  }
 
-        .btn-danger {
-            background-color: var(--danger);
-            color: white;
-        }
-        .btn-danger:hover { background-color: #dc2626; }
+  .field { margin-bottom: 1.1rem; }
+  .field label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 0.4rem; }
 
-        .card {
-            background-color: var(--bg-card);
-            border-radius: 0.5rem;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-        }
+  .error-banner {
+    background: rgba(239,68,68,.12); border: 1px solid rgba(239,68,68,.4);
+    color: #fecaca; padding: 0.6rem 0.9rem; border-radius: var(--radius);
+    margin-bottom: 1rem; font-size: 0.9rem;
+  }
+  .hidden { display: none !important; }
 
-        .form-group { margin-bottom: 1rem; }
+  /* ---- list ---- */
+  .list-header { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin: 0 0 0.75rem; }
+  .recipe-list { display: flex; flex-direction: column; gap: 0.35rem; }
+  .recipe-row {
+    display: flex; align-items: center; gap: 0.9rem;
+    padding: 0.75rem 0.9rem; border-radius: var(--radius);
+    border: 1px solid transparent; cursor: pointer; transition: background .12s, border-color .12s;
+  }
+  .recipe-row:hover { background: var(--surface-2); border-color: #2e2e34; }
+  .recipe-row .thumb {
+    width: 42px; height: 42px; border-radius: 8px; flex: 0 0 42px;
+    background: var(--surface-2); border: 1px solid var(--border);
+    object-fit: cover; display: flex; align-items: center; justify-content: center;
+    color: var(--muted); font-size: 1rem; overflow: hidden;
+  }
+  .recipe-row .thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .recipe-row .main { flex: 1; min-width: 0; }
+  .recipe-row .title { font-weight: 550; font-size: 0.98rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .recipe-row .meta { font-size: 0.78rem; color: var(--muted); margin-top: 1px; }
+  .recipe-row .excerpt { font-size: 0.8rem; color: var(--muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .stars { color: #fbbf24; letter-spacing: 0.05em; }
 
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-        }
+  .empty { text-align: center; color: var(--muted); padding: 3rem 1rem; }
+  .empty h2 { color: var(--text); font-size: 1.1rem; margin: 0 0 0.5rem; }
 
-        input, textarea, select {
-            width: 100%;
-            padding: 0.75rem;
-            border-radius: 0.375rem;
-            background-color: rgba(15, 23, 42, 0.5);
-            border: 1px solid var(--border);
-            color: var(--text-primary);
-            font-family: inherit;
-            box-sizing: border-box;
-        }
+  /* ---- detail ---- */
+  .detail-head { margin-bottom: 1.5rem; }
+  .back-link { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.85rem; color: var(--muted); margin-bottom: 1rem; }
+  .back-link:hover { color: var(--text); }
+  .detail-title { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.02em; margin: 0 0 0.4rem; line-height: 1.2; }
+  .detail-meta { color: var(--muted); font-size: 0.85rem; display: flex; gap: 0.75rem; align-items: center; margin-bottom: 0.75rem; }
+  .detail-actions { display: flex; gap: 0.5rem; }
 
-        textarea { min-height: 100px; resize: vertical; }
+  .gallery { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 1.5rem; }
+  .gallery img {
+    max-width: 100%; border-radius: var(--radius); border: 1px solid var(--border);
+  }
+  .gallery .gthumb { height: 110px; width: auto; object-fit: cover; border-radius: var(--radius); cursor: pointer; }
 
-        .hidden { display: none; }
+  /* ---- markdown body ---- */
+  .md { font-size: 0.98rem; }
+  .md h1, .md h2, .md h3, .md h4 { color: var(--text); font-weight: 650; line-height: 1.3; }
+  .md h1 { font-size: 1.5rem; margin: 1.6rem 0 0.6rem; }
+  .md h2 { font-size: 1.25rem; margin: 1.5rem 0 0.5rem; padding-bottom: 0.35rem; border-bottom: 1px solid var(--border); }
+  .md h3 { font-size: 1.05rem; margin: 1.3rem 0 0.4rem; }
+  .md p { margin: 0.6rem 0; }
+  .md ul, .md ol { padding-left: 1.4rem; margin: 0.6rem 0; }
+  .md li { margin: 0.25rem 0; }
+  .md blockquote {
+    margin: 0.8rem 0; padding: 0.1rem 0 0.1rem 0.9rem;
+    border-left: 3px solid var(--accent); color: var(--muted);
+  }
+  .md code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.85em; background: var(--surface-2);
+    padding: 0.12rem 0.35rem; border-radius: 5px;
+  }
+  .md pre {
+    background: var(--surface-2); padding: 0.9rem; border-radius: var(--radius);
+    overflow-x: auto; border: 1px solid var(--border);
+  }
+  .md pre code { background: none; padding: 0; font-size: 0.85rem; }
+  .md img { max-width: 100%; border-radius: var(--radius); border: 1px solid var(--border); }
+  .md hr { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+  .md table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+  .md th, .md td { border: 1px solid var(--border); padding: 0.4rem 0.6rem; text-align: left; }
+  .md strong { font-weight: 650; }
 
-        .recipe-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-            gap: 1.5rem;
-        }
+  /* ---- editor ---- */
+  .editor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .editor-grid .preview {
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 0.9rem; background: var(--surface); overflow-y: auto;
+    max-height: 560px;
+  }
+  .editor-grid textarea { min-height: 560px; resize: vertical; font-family: ui-monospace, Menlo, monospace; font-size: 0.88rem; line-height: 1.55; }
 
-        .recipe-card h3 {
-            margin-top: 0;
-            color: var(--accent);
-            font-size: 1.25rem;
-        }
+  .upload-grid { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.5rem; }
+  .upload-grid .up-thumb { position: relative; width: 84px; height: 84px; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); }
+  .upload-grid .up-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .upload-grid .up-thumb .rm {
+    position: absolute; top: 3px; right: 3px; width: 20px; height: 20px; border-radius: 50%;
+    background: rgba(0,0,0,.7); color: #fff; border: none; cursor: pointer; font-size: 0.75rem; line-height: 1;
+  }
+  .upload-note { font-size: 0.78rem; color: var(--muted); margin-top: 0.4rem; }
 
-        .recipe-section { margin-bottom: 1rem; }
-
-        .recipe-section h4 {
-            margin: 0 0 0.5rem 0;
-            color: var(--text-secondary);
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .recipe-section p {
-            margin: 0;
-            white-space: pre-line;
-            font-size: 0.9rem;
-            line-height: 1.5;
-        }
-
-        .stars { color: #fbbf24; font-size: 1.25rem; }
-
-        .actions { display: flex; gap: 0.5rem; margin-top: 1rem; }
-
-        .empty-state { text-align: center; padding: 3rem; color: var(--text-secondary); }
-        .empty-state h2 { color: var(--text-primary); margin-bottom: 1rem; }
-
-        .error-banner {
-            background-color: rgba(239, 68, 68, 0.15);
-            border: 1px solid var(--danger);
-            color: #fecaca;
-            padding: 0.75rem 1rem;
-            border-radius: 0.375rem;
-            margin-bottom: 1rem;
-        }
-
-        @media (max-width: 768px) {
-            .recipe-grid { grid-template-columns: 1fr; }
-            header { flex-direction: column; gap: 1rem; text-align: center; }
-        }
-    </style>
+  @media (max-width: 640px) {
+    .editor-grid { grid-template-columns: 1fr; }
+    .editor-grid textarea { min-height: 300px; }
+    .detail-title { font-size: 1.5rem; }
+  }
+</style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Recipe Catalog</h1>
-            <button id="add-recipe" class="btn btn-primary">Add New Recipe</button>
-        </header>
+<div class="shell" id="app">
+  <div id="error-banner" class="error-banner hidden"></div>
+</div>
 
-        <main>
-            <div id="error-banner" class="error-banner hidden"></div>
+<script src="/vendor/marked.min.js"></script>
+<script src="/vendor/purify.min.js"></script>
+<script>
+(function () {
+  const app = document.getElementById('app');
+  const errorBanner = document.getElementById('error-banner');
 
-            <section id="recipe-form" class="card hidden">
-                <h2 id="form-title">Add New Recipe</h2>
-                <form id="recipe-form-el">
-                    <div class="form-group">
-                        <label for="title">Recipe Name</label>
-                        <input type="text" id="title" required>
-                    </div>
+  let recipes = [];
 
-                    <div class="form-group">
-                        <label for="ingredients">Ingredients</label>
-                        <textarea id="ingredients" placeholder="List ingredients, one per line&#10;• 2 cups flour&#10;• 1 cup sugar&#10;• 3 eggs" required></textarea>
-                    </div>
+  // ---------- helpers ----------
+  const $ = (sel) => document.querySelector(sel);
+  const esc = (s) => String(s ?? '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 
-                    <div class="form-group">
-                        <label for="instructions">Instructions</label>
-                        <textarea id="instructions" placeholder="Step-by-step instructions&#10;1. Preheat oven to 350°F&#10;2. Mix dry ingredients&#10;3. Add wet ingredients" required></textarea>
-                    </div>
+  function showError(msg) { errorBanner.textContent = msg; errorBanner.classList.remove('hidden'); }
+  function hideError() { errorBanner.classList.add('hidden'); }
 
-                    <div class="form-group">
-                        <label for="notes">Notes / Iterations</label>
-                        <textarea id="notes" placeholder="Tips, modifications, tasting observations, or what to change next time"></textarea>
-                    </div>
+  function renderMd(md) {
+    try {
+      const html = marked.parse(md || '');
+      return DOMPurify.sanitize(html);
+    } catch (e) { return '<p>' + esc(md) + '</p>'; }
+  }
 
-                    <div class="form-group">
-                        <label for="rating">Rating (1-5 stars)</label>
-                        <select id="rating">
-                            <option value="0">No rating</option>
-                            <option value="1">1 star</option>
-                            <option value="2">2 stars</option>
-                            <option value="3">3 stars</option>
-                            <option value="4">4 stars</option>
-                            <option value="5">5 stars</option>
-                        </select>
-                    </div>
+  function excerpt(body, len = 140) {
+    let t = (body || '')
+      .replace(/```[\s\S]*?```/g, ' ')
+      .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
+      .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+      .replace(/[#>*_`~|]/g, '')
+      .replace(/\s+/g, ' ').trim();
+    return t.length > len ? t.slice(0, len).trimEnd() + '…' : t;
+  }
 
-                    <div class="actions">
-                        <button type="submit" class="btn btn-primary">Save Recipe</button>
-                        <button type="button" id="cancel-form" class="btn btn-secondary">Cancel</button>
-                    </div>
-                </form>
-            </section>
+  function starsHtml(rating) {
+    return rating > 0 ? ('★'.repeat(rating) + '☆'.repeat(5 - rating)) : '';
+  }
 
-            <section id="recipe-list">
-                <h2>Your Recipes</h2>
-                <div id="recipes" class="recipe-grid"></div>
-            </section>
-        </main>
-    </div>
+  function fmtDate(iso) {
+    try { return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }); }
+    catch (e) { return ''; }
+  }
 
-    <script>
-        const recipeList = document.getElementById('recipes');
-        const recipeFormSection = document.getElementById('recipe-form');
-        const recipeFormEl = document.getElementById('recipe-form-el');
-        const addRecipeButton = document.getElementById('add-recipe');
-        const cancelFormButton = document.getElementById('cancel-form');
-        const formTitle = document.getElementById('form-title');
-        const errorBanner = document.getElementById('error-banner');
+  async function http(url, opts) {
+    const res = await fetch(url, opts);
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.error || ('Request failed (' + res.status + ')'));
+    }
+    if (res.status === 204) return null;
+    return res.json();
+  }
 
-        let recipes = [];
-        let editingId = null;
+  // ---------- router ----------
+  function route() {
+    const hash = decodeURIComponent(location.hash || '#/');
+    const [path, id, action] = hash.replace(/^#\//, '').split('/');
+    hideError();
+    if (path === 'r' && id && action === 'edit') return renderEditor(Number(id));
+    if (path === 'r' && id) return renderDetail(Number(id));
+    if (path === 'new') return renderEditor(null);
+    return renderList();
+  }
 
-        function showError(msg) {
-            errorBanner.textContent = msg;
-            errorBanner.classList.remove('hidden');
-        }
+  // ---------- list ----------
+  function renderList() {
+    const rows = recipes.map(r => {
+      const thumb = (r.images && r.images.length)
+        ? `<img src="${esc(r.images[0])}" alt="">`
+        : '<span>🍽️</span>';
+      const stars = starsHtml(r.rating);
+      return `
+        <div class="recipe-row" data-id="${r.id}">
+          <div class="thumb">${thumb}</div>
+          <div class="main">
+            <div class="title">${esc(r.title)}</div>
+            <div class="meta">${stars ? '<span class="stars">' + esc(stars) + '</span> · ' : ''}${esc(fmtDate(r.created_at))}${r.images.length ? ' · ' + r.images.length + ' 📷' : ''}</div>
+            <div class="excerpt">${esc(excerpt(r.body))}</div>
+          </div>
+        </div>`;
+    }).join('');
 
-        function hideError() {
-            errorBanner.classList.add('hidden');
-        }
+    app.innerHTML = `
+      <div class="topbar">
+        <div class="brand"><span class="mark"></span><h1>Recipe <span class="dot">Catalog</span></h1></div>
+        <button class="btn btn-primary" id="new-btn">+ New recipe</button>
+      </div>
+      ${recipes.length
+        ? `<div class="list-header">${recipes.length} recipe${recipes.length === 1 ? '' : 's'}</div><div class="recipe-list">${rows}</div>`
+        : `<div class="empty"><h2>No recipes yet</h2><p>Capture your first one.</p></div>`}`;
 
-        async function loadRecipes() {
-            hideError();
-            try {
-                const res = await fetch('/api/recipes');
-                if (!res.ok) throw new Error('Failed to load recipes');
-                recipes = await res.json();
-                displayRecipes();
-            } catch (err) {
-                showError('Could not load recipes: ' + err.message);
-            }
-        }
+    $('#new-btn').addEventListener('click', () => location.hash = '#/new');
+    document.querySelectorAll('.recipe-row').forEach(el =>
+      el.addEventListener('click', () => { location.hash = '#/r/' + el.dataset.id; }));
+  }
 
-        function displayRecipes() {
-            recipeList.innerHTML = '';
+  // ---------- detail ----------
+  async function renderDetail(id) {
+    const r = recipes.find(x => x.id === id);
+    if (!r) { showError('Recipe not found'); return renderList(); }
 
-            if (recipes.length === 0) {
-                recipeList.innerHTML = `
-                    <div class="empty-state">
-                        <h2>No recipes yet</h2>
-                        <p>Start by adding your first recipe!</p>
-                    </div>
-                `;
-                return;
-            }
+    const galleryHtml = (r.images && r.images.length)
+      ? `<div class="gallery">${r.images.map(p =>
+          `<img class="gthumb" src="${esc(p)}" alt="" data-full="${esc(p)}">`).join('')}</div>`
+      : '';
 
-            recipes.forEach(recipe => {
-                const card = document.createElement('div');
-                card.className = 'card recipe-card';
+    app.innerHTML = `
+      <div class="topbar">
+        <div class="brand"><span class="mark"></span><h1>Recipe <span class="dot">Catalog</span></h1></div>
+        <button class="btn btn-ghost btn-sm" data-act="list">← All recipes</button>
+      </div>
+      <div class="detail-head">
+        <h2 class="detail-title">${esc(r.title)}</h2>
+        <div class="detail-meta">
+          ${r.rating > 0 ? '<span class="stars">' + esc(starsHtml(r.rating)) + '</span>' : ''}
+          <span>Added ${esc(fmtDate(r.created_at))}</span>
+        </div>
+        <div class="detail-actions">
+          <button class="btn btn-primary btn-sm" data-act="edit">Edit</button>
+          <button class="btn btn-danger btn-sm" data-act="delete">Delete</button>
+        </div>
+      </div>
+      ${galleryHtml}
+      <div class="md">${renderMd(r.body)}</div>`;
 
-                const stars = recipe.rating > 0
-                    ? '★'.repeat(recipe.rating) + '☆'.repeat(5 - recipe.rating)
-                    : '';
+    app.querySelector('[data-act="list"]').addEventListener('click', () => location.hash = '#/');
+    app.querySelector('[data-act="edit"]').addEventListener('click', () => location.hash = `#/r/${id}/edit`);
+    app.querySelector('[data-act="delete"]').addEventListener('click', () => deleteRecipe(r));
 
-                card.innerHTML = `
-                    <h3>${escapeHtml(recipe.title)}</h3>
+    // click a gallery thumb -> open full-size in new tab
+    app.querySelectorAll('.gthumb').forEach(img =>
+      img.addEventListener('click', () => window.open(img.dataset.full, '_blank')));
+  }
 
-                    <div class="recipe-section">
-                        <h4>Ingredients</h4>
-                        <p>${escapeHtml(recipe.ingredients)}</p>
-                    </div>
+  async function deleteRecipe(r) {
+    if (!confirm('Delete "' + r.title + '"?')) return;
+    try {
+      await http('/api/recipes/' + r.id, { method: 'DELETE' });
+      location.hash = '#/';
+      await load();
+    } catch (e) { showError(e.message); }
+  }
 
-                    <div class="recipe-section">
-                        <h4>Instructions</h4>
-                        <p>${escapeHtml(recipe.instructions)}</p>
-                    </div>
+  // ---------- editor ----------
+  function renderEditor(id) {
+    const r = id ? recipes.find(x => x.id === id) : null;
 
-                    ${recipe.notes ? `
-                    <div class="recipe-section">
-                        <h4>Notes / Iterations</h4>
-                        <p>${escapeHtml(recipe.notes)}</p>
-                    </div>` : ''}
+    app.innerHTML = `
+      <div class="topbar">
+        <div class="brand"><span class="mark"></span><h1>Recipe <span class="dot">Catalog</span></h1></div>
+        <button class="btn btn-ghost btn-sm" data-act="cancel">Cancel</button>
+      </div>
+      <h2 class="detail-title" style="font-size:1.4rem;margin-bottom:1.2rem">${r ? 'Edit recipe' : 'New recipe'}</h2>
 
-                    ${stars ? `
-                    <div class="recipe-section">
-                        <h4>Rating</h4>
-                        <div class="stars">${stars}</div>
-                    </div>` : ''}
+      <div class="field">
+        <label for="in-title">Title</label>
+        <input type="text" id="in-title" placeholder="e.g. Sichuan Chili Oil × Tadka Chicken" value="${esc(r ? r.title : '')}">
+      </div>
 
-                    <div class="actions">
-                        <button data-edit="${recipe.id}" class="btn btn-secondary">Edit</button>
-                        <button data-delete="${recipe.id}" class="btn btn-danger">Delete</button>
-                    </div>
-                `;
-                recipeList.appendChild(card);
-            });
+      <div class="field">
+        <label for="in-rating">Rating</label>
+        <select id="in-rating">
+          <option value="0">No rating</option>
+          ${[1,2,3,4,5].map(n => `<option value="${n}" ${r && r.rating === n ? 'selected' : ''}>${n} star${n > 1 ? 's' : ''}</option>`).join('')}
+        </select>
+      </div>
 
-            document.querySelectorAll('[data-edit]').forEach(btn =>
-                btn.addEventListener('click', () => editRecipe(Number(btn.dataset.edit))));
-            document.querySelectorAll('[data-delete]').forEach(btn =>
-                btn.addEventListener('click', () => deleteRecipe(Number(btn.dataset.delete))));
-        }
+      <div class="field">
+        <label>Photos</label>
+        <input type="file" id="in-images" accept="image/*" multiple>
+        <div class="upload-grid" id="upload-grid"></div>
+        <div class="upload-note">Drag images here is coming — for now use the file picker. Stored to your account.</div>
+      </div>
 
-        function escapeHtml(str) {
-            return String(str)
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;');
-        }
+      <div class="field">
+        <label for="in-body">Recipe (Markdown)</label>
+        <div class="editor-grid">
+          <textarea id="in-body" placeholder="# Ingredients&#10;&#10;- first thing&#10;- second thing&#10;&#10;## Instructions&#10;&#10;1. step one&#10;2. step two">${esc(r ? r.body : '')}</textarea>
+          <div class="preview md" id="md-preview"></div>
+        </div>
+      </div>
 
-        function showForm() {
-            recipeFormSection.classList.remove('hidden');
-            formTitle.textContent = 'Add New Recipe';
-            document.getElementById('title').focus();
-        }
+      <div style="display:flex;gap:0.6rem;justify-content:flex-end">
+        <button class="btn btn-ghost" data-act="cancel">Cancel</button>
+        <button class="btn btn-primary" data-act="save">${r ? 'Save changes' : 'Create recipe'}</button>
+      </div>`;
 
-        function hideForm() {
-            recipeFormSection.classList.add('hidden');
-            recipeFormEl.reset();
-            editingId = null;
-        }
+    const bodyEl = $('#in-body');
+    const previewEl = $('#md-preview');
+    const preview = () => { previewEl.innerHTML = renderMd(bodyEl.value); };
+    bodyEl.addEventListener('input', preview);
+    preview();
 
-        function editRecipe(id) {
-            const recipe = recipes.find(r => r.id === id);
-            if (!recipe) return;
-            editingId = id;
-            document.getElementById('title').value = recipe.title;
-            document.getElementById('ingredients').value = recipe.ingredients;
-            document.getElementById('instructions').value = recipe.instructions;
-            document.getElementById('notes').value = recipe.notes;
-            document.getElementById('rating').value = recipe.rating;
-            formTitle.textContent = 'Edit Recipe';
-            recipeFormSection.classList.remove('hidden');
-        }
+    // image upload state (accumulated during editing)
+    let images = (r && r.images) ? r.images.slice() : [];
 
-        async function handleSubmit(e) {
-            e.preventDefault();
-            hideError();
+    const redrawThumbs = () => {
+      $('#upload-grid').innerHTML = images.map((p, i) =>
+        `<div class="up-thumb"><img src="${esc(p)}" alt=""><button class="rm" data-i="${i}">×</button></div>`
+      ).join('');
+      document.querySelectorAll('.rm').forEach(b =>
+        b.addEventListener('click', () => { images.splice(Number(b.dataset.i), 1); redrawThumbs(); }));
+    };
+    redrawThumbs();
 
-            const payload = {
-                title: document.getElementById('title').value,
-                ingredients: document.getElementById('ingredients').value,
-                instructions: document.getElementById('instructions').value,
-                notes: document.getElementById('notes').value,
-                rating: parseInt(document.getElementById('rating').value, 10) || 0,
-            };
+    $('#in-images').addEventListener('change', async (e) => {
+      const files = Array.from(e.target.files || []);
+      if (!files.length) return;
+      const fd = new FormData();
+      files.forEach(f => fd.append('images', f));
+      try {
+        hideError();
+        const data = await http('/api/uploads', { method: 'POST', body: fd });
+        images = images.concat(data.images);
+        redrawThumbs();
+      } catch (err) { showError('Upload failed: ' + err.message); } finally {
+        e.target.value = '';
+      }
+    });
 
-            try {
-                const res = await fetch(editingId ? `/api/recipes/${editingId}` : '/api/recipes', {
-                    method: editingId ? 'PUT' : 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload),
-                });
-                if (!res.ok) {
-                    const data = await res.json().catch(() => ({}));
-                    throw new Error(data.error || 'Save failed');
-                }
-                hideForm();
-                await loadRecipes();
-            } catch (err) {
-                showError('Could not save: ' + err.message);
-            }
-        }
+    app.querySelector('[data-act="cancel"]').addEventListener('click', () =>
+      location.hash = id ? `#/r/${id}` : '#/');
+    app.querySelector('[data-act="save"]').addEventListener('click', async () => {
+      const title = $('#in-title').value.trim();
+      const body = bodyEl.value.trim();
+      const rating = parseInt($('#in-rating').value, 10) || 0;
+      if (!title) return showError('Please add a title');
+      if (!body) return showError('Please write the recipe (markdown)');
+      const payload = { title, body, rating, images };
+      try {
+        hideError();
+        await http(id ? '/api/recipes/' + id : '/api/recipes', {
+          method: id ? 'PUT' : 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        location.hash = id ? `#/r/${id}` : '#/';
+        await load();
+      } catch (e) { showError(e.message); }
+    });
+  }
 
-        async function deleteRecipe(id) {
-            if (!confirm('Are you sure you want to delete this recipe?')) return;
-            hideError();
-            try {
-                const res = await fetch(`/api/recipes/${id}`, { method: 'DELETE' });
-                if (!res.ok) throw new Error('Delete failed');
-                await loadRecipes();
-            } catch (err) {
-                showError('Could not delete: ' + err.message);
-            }
-        }
+  // ---------- boot ----------
+  async function load() {
+    try {
+      recipes = await http('/api/recipes');
+    } catch (e) {
+      showError('Could not load recipes: ' + e.message);
+      recipes = [];
+    }
+    route();
+  }
 
-        addRecipeButton.addEventListener('click', showForm);
-        cancelFormButton.addEventListener('click', hideForm);
-        recipeFormEl.addEventListener('submit', handleSubmit);
-
-        loadRecipes();
-    </script>
+  window.addEventListener('hashchange', route);
+  load();
+})();
+</script>
 </body>
 </html>
