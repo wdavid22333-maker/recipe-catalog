@@ -171,6 +171,18 @@
   }
   .upload-note { font-size: 0.78rem; color: var(--muted); margin-top: 0.4rem; }
 
+  /* ---- notes ---- */
+  .notes-section { margin-top: 2.5rem; border-top: 1px solid var(--border); padding-top: 1.5rem; }
+  .notes-header { font-size: 1.05rem; font-weight: 650; margin: 0 0 0.9rem; }
+  .note-item { padding: 0.75rem 0; border-bottom: 1px solid var(--border); }
+  .note-item:last-child { border-bottom: none; }
+  .note-meta { font-size: 0.78rem; color: var(--muted); margin-bottom: 0.3rem; }
+  .note-meta .who { color: var(--text); font-weight: 550; }
+  .note-body { font-size: 0.93rem; white-space: pre-wrap; word-break: break-word; }
+  .note-empty { color: var(--muted); font-size: 0.9rem; padding: 0.4rem 0; }
+  .note-form { margin-top: 1.25rem; }
+  .note-form .field { margin-bottom: 0.6rem; }
+
   @media (max-width: 640px) {
     .editor-grid { grid-template-columns: 1fr; }
     .editor-grid textarea { min-height: 300px; }
@@ -307,7 +319,23 @@
         </div>
       </div>
       ${galleryHtml}
-      <div class="md">${renderMd(r.body)}</div>`;
+      <div class="md">${renderMd(r.body)}</div>
+
+      <section class="notes-section">
+        <h3 class="notes-header">Notes</h3>
+        <div id="notes-list"><div class="note-empty">Loading…</div></div>
+        <form id="note-form" class="note-form">
+          <div class="field">
+            <input type="text" id="note-name" placeholder="Your name (optional)" maxlength="80">
+          </div>
+          <div class="field">
+            <textarea id="note-body" rows="3" placeholder="Leave a note — a tweak, a question, how it went…"></textarea>
+          </div>
+          <div style="display:flex;justify-content:flex-end">
+            <button type="submit" class="btn btn-primary btn-sm">Add note</button>
+          </div>
+        </form>
+      </section>`;
 
     app.querySelector('[data-act="list"]').addEventListener('click', () => location.hash = '#/');
     app.querySelector('[data-act="edit"]').addEventListener('click', () => location.hash = `#/r/${id}/edit`);
@@ -316,6 +344,50 @@
     // click a gallery thumb -> open full-size in new tab
     app.querySelectorAll('.gthumb').forEach(img =>
       img.addEventListener('click', () => window.open(img.dataset.full, '_blank')));
+
+    loadNotes(id);
+    app.querySelector('#note-form').addEventListener('submit', (e) => submitNote(e, id));
+  }
+
+  // ---------- notes ----------
+  function renderNotes(listEl, notes) {
+    if (!notes.length) {
+      listEl.innerHTML = '<div class="note-empty">No notes yet — be the first.</div>';
+      return;
+    }
+    listEl.innerHTML = notes.map(n => `
+      <div class="note-item">
+        <div class="note-meta"><span class="who">${esc(n.name || 'Anonymous')}</span> · ${esc(fmtDate(n.created_at))}</div>
+        <div class="note-body">${esc(n.body)}</div>
+      </div>`).join('');
+  }
+
+  async function loadNotes(id) {
+    const listEl = document.getElementById('notes-list');
+    if (!listEl) return;
+    try {
+      renderNotes(listEl, await http('/api/recipes/' + id + '/notes'));
+    } catch (e) {
+      listEl.innerHTML = '<div class="note-empty">Could not load notes.</div>';
+    }
+  }
+
+  async function submitNote(e, id) {
+    e.preventDefault();
+    const nameEl = document.getElementById('note-name');
+    const bodyEl = document.getElementById('note-body');
+    const body = bodyEl.value.trim();
+    if (!body) return showError("Note can't be empty");
+    try {
+      hideError();
+      await http('/api/recipes/' + id + '/notes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: nameEl.value.trim(), body }),
+      });
+      bodyEl.value = ''; // keep the name so follow-up notes are quick
+      await loadNotes(id);
+    } catch (err) { showError(err.message); }
   }
 
   async function deleteRecipe(r) {

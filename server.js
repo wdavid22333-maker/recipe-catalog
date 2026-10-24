@@ -184,6 +184,36 @@ app.delete("/api/recipes/:id", async (req, res) => {
   res.status(204).end();
 });
 
+// ---- API: notes (anyone can leave one; name optional) --------------------
+app.get("/api/recipes/:id/notes", async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (!Number.isInteger(id)) return res.status(400).json({ error: "Bad id" });
+  const { rows } = await pool.query(
+    `SELECT id, name, body, created_at
+     FROM recipe_notes WHERE recipe_id = $1 ORDER BY created_at ASC`,
+    [id]
+  );
+  res.json(rows);
+});
+
+app.post("/api/recipes/:id/notes", async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (!Number.isInteger(id)) return res.status(400).json({ error: "Bad id" });
+  const name = clean(req.body?.name, 80);
+  const body = clean(req.body?.body, 5000);
+  if (!body) return res.status(400).json({ error: "Note can't be empty" });
+
+  const recipe = await pool.query(`SELECT 1 FROM recipes WHERE id = $1`, [id]);
+  if (!recipe.rowCount) return res.status(404).json({ error: "Recipe not found" });
+
+  const { rows } = await pool.query(
+    `INSERT INTO recipe_notes (recipe_id, name, body)
+     VALUES ($1, $2, $3) RETURNING id, name, body, created_at`,
+    [id, name, body]
+  );
+  res.status(201).json(rows[0]);
+});
+
 // ---- Static frontend + SPA fallback -------------------------------------
 app.use(express.static(path.join(__dirname, "public")));
 app.get("*", (_req, res) => {

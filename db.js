@@ -54,4 +54,18 @@ export async function initDb() {
   await pool.query(
     `CREATE INDEX IF NOT EXISTS recipes_created_at_idx ON recipes (created_at DESC);`
   );
+
+  // Free-form notes anyone can leave on a recipe. Name is optional.
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS recipe_notes (
+      id         SERIAL PRIMARY KEY,
+      recipe_id  INT  NOT NULL REFERENCES recipes(id) ON DELETE CASCADE,
+      name       TEXT NOT NULL DEFAULT '',
+      body       TEXT NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+  `);
+  await pool.query(
+    `CREATE INDEX IF NOT EXISTS recipe_notes_recipe_id_idx ON recipe_notes (recipe_id, created_at);`
+  );
 }
