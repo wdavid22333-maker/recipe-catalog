@@ -315,6 +315,7 @@
         </div>
         <div class="detail-actions">
           <button class="btn btn-primary btn-sm" data-act="edit">Edit</button>
+          <button class="btn btn-ghost btn-sm" data-act="copy">Copy recipe</button>
           <button class="btn btn-danger btn-sm" data-act="delete">Delete</button>
         </div>
       </div>
@@ -340,6 +341,7 @@
     app.querySelector('[data-act="list"]').addEventListener('click', () => location.hash = '#/');
     app.querySelector('[data-act="edit"]').addEventListener('click', () => location.hash = `#/r/${id}/edit`);
     app.querySelector('[data-act="delete"]').addEventListener('click', () => deleteRecipe(r));
+    app.querySelector('[data-act="copy"]').addEventListener('click', (e) => copyRecipe(r, e.currentTarget));
 
     // click a gallery thumb -> open full-size in new tab
     app.querySelectorAll('.gthumb').forEach(img =>
@@ -397,6 +399,35 @@
       location.hash = '#/';
       await load();
     } catch (e) { showError(e.message); }
+  }
+
+  // ---------- copy to clipboard ----------
+  function flash(btn, msg) {
+    const orig = btn.dataset.label || btn.textContent;
+    btn.dataset.label = orig;
+    btn.textContent = msg;
+    btn.disabled = true;
+    setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 1200);
+  }
+
+  async function copyRecipe(r, btn) {
+    const text = r.title + '\n\n' + r.body;
+    try {
+      await navigator.clipboard.writeText(text);
+      flash(btn, 'Copied!');
+    } catch (e) {
+      // Fallback for browsers/contexts without the async clipboard API.
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.top = '-1000px';
+      document.body.appendChild(ta);
+      ta.select();
+      let ok = false;
+      try { ok = document.execCommand('copy'); } catch (_) {}
+      document.body.removeChild(ta);
+      ok ? flash(btn, 'Copied!') : showError('Could not copy to clipboard');
+    }
   }
 
   // ---------- editor ----------
